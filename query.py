@@ -564,8 +564,12 @@ def process_updates(local_test_file=None):
 
     is_initial_run, changes = not bool(state), False
     files = [local_test_file] if local_test_file else []
+
     if not local_test_file:
         for r, _, fs in os.walk(CCF_PATH):
+            # 跳过 CCF_PATH 根目录下的文件，仅处理子目录（如 AI/, NW/ 等）
+            if os.path.abspath(r) == os.path.abspath(CCF_PATH):
+                continue
             for f in fs:
                 if f.endswith(".yml"):
                     files.append(os.path.join(r, f))
@@ -671,6 +675,8 @@ def run_search(keyword, local_mode=False, test_file=None):
         search_paths = [test_file] if test_file else []
         if not test_file:
             for r, _, fs in os.walk(CCF_PATH):
+                if os.path.abspath(r) == os.path.abspath(CCF_PATH):
+                    continue
                 for f in fs:
                     if f.endswith(".yml"):
                         search_paths.append(os.path.join(r, f))
