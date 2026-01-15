@@ -6,6 +6,7 @@ import smtplib
 import time
 import urllib
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timedelta, timezone
 from email.header import Header
 from email.mime.text import MIMEText
@@ -23,6 +24,7 @@ STATE_FILE = os.path.join(DATA_DIR, "state.json")
 KB_FILE = os.path.join(DATA_DIR, "knowledge_base.json")
 INTERESTED_AREAS = (os.environ.get("INTERESTED_AREAS") or "AI,NW,DB,SC").split(",")
 MAX_PAPERS_PER_YEAR = int(os.environ.get("MAX_PAPERS_PER_YEAR") or "250")
+MAX_WORKERS = int(os.environ.get("MAX_WORKERS") or "10")
 
 # LLM 配置
 LLM_API_KEY = os.environ.get("LLM_API_KEY")
@@ -180,20 +182,13 @@ def llm_stage1_extract_tags(papers_batch):
         model=LLM_MODEL, messages=[{"role": "user", "content": prompt}], temperature=0.1
     )
     content = response.choices[0].message.content.strip()
-    usage = response.usage
-    usage_stats = {
-        "prompt_tokens": usage.prompt_tokens,
-        "completion_tokens": usage.completion_tokens,
-        "total_tokens": usage.total_tokens,
-    }
 
     try:
         json_str = re.search(r"\[.*\]", content, re.DOTALL).group()
         tags = json.loads(json_str)
     except:
         tags = re.findall(r'"([^"]+)"', content)
-
-    return [str(t).strip() for t in tags], usage_stats
+    return [str(t).strip() for t in tags]
 
 
 @retry(stop=stop_after_attempt(3), wait=wait_fixed(2))
@@ -222,23 +217,14 @@ def llm_stage2_summarize(tag_counts, conference_name, year, total_papers):
     """
 
     response = client.chat.completions.create(
-        model=LLM_MODEL,
-        messages=[{"role": "user", "content": prompt}],
-        temperature=0.2,
+        model=LLM_MODEL, messages=[{"role": "user", "content": prompt}], temperature=0.2
     )
     content = response.choices[0].message.content.strip()
-    usage = response.usage
-    usage_stats = {
-        "prompt_tokens": usage.prompt_tokens,
-        "completion_tokens": usage.completion_tokens,
-        "total_tokens": usage.total_tokens,
-    }
-
     try:
         json_str = re.search(r"\[.*\]", content, re.DOTALL).group()
-        return json.loads(json_str), usage_stats
+        return json.loads(json_str)
     except:
-        return [], usage_stats
+        return []
 
 
 def analyze_year_data(
@@ -246,75 +232,46 @@ def analyze_year_data(
 ):
     papers = fetch_dblp_papers(dblp_name, year, limit=max_papers)
     if not papers:
-        print(f"   [Analysis] No papers found for {year}.")
         return None
 
-    # 全局计数器：记录每个 Tag 在多少篇论文中出现过
     global_tag_counter = Counter()
-    total_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
     batch_size = 10
+    batches = [papers[i : i + batch_size] for i in range(0, len(papers), batch_size)]
 
-    print(f"   [Analysis] Processing {len(papers)} papers via LLM ({LLM_MODEL})...")
+    print(
+        f"   [Analysis] {year}: Processing {len(papers)} papers in {len(batches)} batches (Parallel: {MAX_WORKERS})..."
+    )
 
-    # --- Stage 1: Batch Processing ---
-    for i in range(0, len(papers), batch_size):
-        batch = papers[i : i + batch_size]
+    # --- Stage 1: 并行处理批次 ---
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        futures = {
+            executor.submit(llm_stage1_extract_tags, b): i
+            for i, b in enumerate(batches)
+        }
 
-        if verbose:
-            print(f"\n   [Debug] Batch {i // batch_size + 1} Inputs:")
-            for p in batch:
-                print(f"      - {p['title']}")
-
-        try:
-            # 获取本批次的所有 Tags
-            batch_tags_flat, usage = llm_stage1_extract_tags(batch)
-
-            # 累加用量
-            for k in total_usage:
-                total_usage[k] += usage.get(k, 0)
-
-            for tag in batch_tags_flat:
-                # 简单清洗：去除首尾空格，转 Title Case 方便统计
-                clean_tag = tag.strip()
-                if clean_tag:
-                    global_tag_counter[clean_tag] += 1
-
-            if verbose:
-                print(f"   [Debug] Batch Tags: {batch_tags_flat}")
-                print(f"   [Debug] Batch Usage: {usage['total_tokens']}")
-
-        except Exception as e:
-            print(f"     Batch {i // batch_size + 1} failed: {e}")
+        for future in as_completed(futures):
+            try:
+                batch_tags = future.result()
+                for tag in batch_tags:
+                    if tag.strip():
+                        global_tag_counter[tag.strip()] += 1
+            except Exception as e:
+                print(f"     [Error] A batch failed: {e}")
 
     if not global_tag_counter:
         return None
 
-    # --- Stage 2: Summarization ---
-    top_tags_map = dict(global_tag_counter)
-
-    print(f"   [Analysis] Summarizing from {len(top_tags_map)} distinct tags...")
-
-    # 传入 total_papers (len(papers)) 以便计算正确比例
-    final_summary, usage_s2 = llm_stage2_summarize(
-        tag_counts=top_tags_map,
+    # --- Stage 2: 总结 (单次请求) ---
+    final_summary = llm_stage2_summarize(
+        tag_counts=dict(global_tag_counter),
         conference_name=conf_display_name,
         year=year,
         total_papers=len(papers),
     )
 
-    for k in total_usage:
-        total_usage[k] += usage_s2.get(k, 0)
-
-    if verbose:
-        print(
-            f"\n   [Debug] Final Summary:\n{json.dumps(final_summary, indent=2, ensure_ascii=False)}"
-        )
-        print(f"   [Debug] Total Cost: {total_usage}")
-
     return {
         "titles_count": len(papers),
         "summary": final_summary,
-        "token_usage": total_usage,
         "updated_at": datetime.now().strftime("%Y-%m-%d"),
     }
 
@@ -333,7 +290,6 @@ def get_notification_body(info, kb_record):
     years = sorted(kb_record.keys(), reverse=True)[:3] if kb_record else []
 
     analysis_section = ""
-    total_tokens_consumed = 0
 
     if not years:
         analysis_section = "⚠️ **暂无历史论文趋势分析**"
@@ -342,7 +298,6 @@ def get_notification_body(info, kb_record):
         for y in years:
             data = kb_record[y]
             summary = data.get("summary", [])
-            total_tokens_consumed += data.get("token_usage", {}).get("total_tokens", 0)
 
             if not summary:
                 continue
@@ -363,12 +318,6 @@ def get_notification_body(info, kb_record):
                 ratio = tag.get("ratio", "")
                 analysis_section += f"- **{name}** `({ratio})`\n  - {desc}\n"
 
-    token_footer = (
-        f"\n---\n###### 💎 LLM Token Cost: {total_tokens_consumed} (Analysis Session)"
-        if total_tokens_consumed > 0
-        else ""
-    )
-
     msg = f"""
 ## 📢 {info["title"]} {info["year"]} 更新提醒
 > {info["description"]}
@@ -384,7 +333,6 @@ def get_notification_body(info, kb_record):
 
 ---
 {analysis_section}
-{token_footer}
     """
     return msg
 
@@ -562,7 +510,7 @@ def process_updates(local_test_file=None):
         with open(STATE_FILE, "r") as f:
             state = json.load(f)
 
-    is_initial_run, changes = not bool(state), False
+    is_initial_run = not bool(state)
     files = [local_test_file] if local_test_file else []
 
     if not local_test_file:
@@ -620,11 +568,11 @@ def process_updates(local_test_file=None):
                                 )
                                 if res:
                                     kb[dblp_name][str(y)] = res
-                                    changes = True
 
                         if is_upd or local_test_file:
                             state[cid] = fp_dict
-                            changes = True
+                            save_data(state, kb)
+                            print(f"   [DB] Progress saved for {dblp_name}")
                             if not is_initial_run and info["status"] != "已截止":
                                 print(f"🚀 Notifying: {info['title']}")
                                 send_pushplus(
@@ -635,8 +583,6 @@ def process_updates(local_test_file=None):
                                     f"{info['title']} 更新提醒",
                                     get_email_body(info, kb[dblp_name]),
                                 )
-    if changes:
-        save_data(state, kb)
 
 
 def run_search(keyword, local_mode=False, test_file=None):
