@@ -66,8 +66,8 @@ jobs:
             if [[ "$CATEGORY" == "Query" ]] && [[ "$AUTHOR" == "$OWNER" ]]; then
               if [[ "$TITLE" == q:* ]]; then
                 KEYWORD=$(echo "$TITLE" | sed 's/q://g' | xargs)
-                python query.py --query "$KEYWORD"
-              fi
+                python -u query.py --query "$KEYWORD"
+              fi  
             else
               echo "🛡️ 拦截：非作者本人或非 Query 分类的非法请求 (Author: $AUTHOR, Category: $CATEGORY)"
               exit 0
@@ -78,12 +78,12 @@ jobs:
             if [[ "${{ github.event_inputs.conference_name }}" != "" ]]; then
               python query.py --query "${{ github.event.inputs.conference_name }}"
             else
-              python query.py
+              python -u query.py
             fi
           
           # 3. 定时任务
           else
-            python query.py
+            python -u query.py
           fi
 
       - name: Commit and Push changes
