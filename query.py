@@ -21,8 +21,8 @@ CCF_PATH = "ccf-repo/conference"
 DATA_DIR = "data"
 STATE_FILE = os.path.join(DATA_DIR, "state.json")
 KB_FILE = os.path.join(DATA_DIR, "knowledge_base.json")
-INTERESTED_AREAS = os.environ.get("INTERESTED_AREAS", "AI,NW,DB,SC").split(",")
-MAX_PAPERS_PER_YEAR = int(os.environ.get("MAX_PAPERS_PER_YEAR", "250"))
+INTERESTED_AREAS = (os.environ.get("INTERESTED_AREAS") or "AI,NW,DB,SC").split(",")
+MAX_PAPERS_PER_YEAR = int(os.environ.get("MAX_PAPERS_PER_YEAR") or "250")
 
 # LLM 配置
 LLM_API_KEY = os.environ.get("LLM_API_KEY")
