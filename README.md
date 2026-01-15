@@ -92,3 +92,7 @@
 ## 🙏 鸣谢
 - 数据源提供：[ccfddl/ccf-deadlines](https://github.com/ccfddl/ccf-deadlines)
 - 本项目旨在为科研人员提供便捷的会议截稿与领域趋势提醒。
+
+## 🚧 下一步计划
+- 并行化处理以提升首次运行速度
+- LLM余额不足时推送/邮件提醒
