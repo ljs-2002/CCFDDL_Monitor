@@ -15,6 +15,8 @@
 1. **Fork 本仓库**。
 2. **配置 Secrets**：在仓库 `Settings -> Secrets and variables -> Actions` 中点击 `New repository secret`，添加下表中的变量。
 3. **运行 Action**：点击 `Actions` 选项卡，手动运行一次 `CCF Deadline Monitor` 工作流。
+    - 第一次运行需要较长时间来收集历史会议数据。
+    - 第一次运行完成不会发送微信推送/邮件通知。
 
 ## ⚙️ 环境变量配置 (Secrets)
 
