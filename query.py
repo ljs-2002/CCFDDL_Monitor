@@ -520,7 +520,9 @@ def get_timeline_status(timeline_list, timezone_str):
 
 def process_updates(local_test_file=None):
     """
-    核心处理逻辑：支持初始化部署、领域过滤、基于最新年份的历史分析。
+    核心处理逻辑：
+    1. 自动补全缺失的知识库数据（补全时不通知）。
+    2. 仅在会议更新且截止日期未过期时发送通知。
     """
     # 1. 加载持久化数据
     state, kb = {}, {}
@@ -559,98 +561,106 @@ def process_updates(local_test_file=None):
                 if "ALL" not in INTERESTED_AREAS and sub_code not in INTERESTED_AREAS:
                     continue
 
+                # 如果 YAML 里的 dblp 修正了，这里会得到新的 key
                 dblp_name = data.get("dblp") or data.get("title", "").lower()
-
-                # 核心修改：找出该会议记录中的最新年份
                 all_confs = data.get("confs", [])
                 if not all_confs:
                     continue
+
+                # 确定该会议的最新年份条目
                 max_year_in_data = max(c.get("year", 0) for c in all_confs)
 
                 for conf in all_confs:
-                    conf_id = str(conf.get("id"))
                     current_conf_year = conf.get("year")
+                    # 只针对最新年份的条目进行逻辑处理
+                    if current_conf_year != max_year_in_data:
+                        continue
+
+                    conf_id = str(conf.get("id"))
                     tl_data = conf.get("timeline", [{}])[0]
                     fingerprint = {"year": current_conf_year, "timeline": tl_data}
 
-                    # 判断更新：新会议、指纹变动、或测试模式
+                    # A. 状态更新判定（指纹对比）
                     old_fp = state.get(conf_id)
                     is_new_update = old_fp != fingerprint
 
-                    # 只有发生更新或者是初始化/测试模式时，才执行推送流程
-                    if is_new_update or local_test_file or is_initial_run:
-                        state[conf_id] = fingerprint
-                        changes_detected = True
+                    # B. 知识库补全判定（只要缺失就补）
+                    if dblp_name not in kb:
+                        kb[dblp_name] = {}
 
-                        # 只针对“最新年份”的条目执行历史深度分析，避免旧条目触发重复分析
-                        if current_conf_year == max_year_in_data:
-                            print(
-                                f"🚀 Processing Latest: {conf_id} ({current_conf_year})"
-                            )
+                    target_years = [current_conf_year - i for i in range(1, 4)]
+                    kb_missing = any(str(y) not in kb[dblp_name] for y in target_years)
 
-                            # 获取并转换截稿日期
-                            target_tl, status = get_timeline_status(
-                                conf.get("timeline", []), conf.get("timezone")
+                    # 只要发生指纹更新、数据缺失或处于测试模式，就需要执行基础分析
+                    if is_new_update or kb_missing or local_test_file:
+                        target_tl, status = get_timeline_status(
+                            conf.get("timeline", []), conf.get("timezone")
+                        )
+
+                        # 转换显示信息
+                        info = {
+                            "title": data.get("title"),
+                            "description": data.get("description"),
+                            "sub": CCF_SUB_MAP.get(sub_code, sub_code),
+                            "rank": data.get("rank", {}).get("ccf"),
+                            "year": current_conf_year,
+                            "date": conf.get("date"),
+                            "place": conf.get("place"),
+                            "link": conf.get("link"),
+                            "abs_deadline": convert_to_cst(
+                                target_tl.get("abstract_deadline"), conf.get("timezone")
+                            ),
+                            "main_deadline": convert_to_cst(
+                                target_tl.get("deadline"), conf.get("timezone")
                             )
-                            info = {
-                                "title": data.get("title"),
-                                "description": data.get("description"),
-                                "sub": CCF_SUB_MAP.get(sub_code, sub_code),
-                                "rank": data.get("rank", {}).get("ccf"),
-                                "year": current_conf_year,
-                                "date": conf.get("date"),
-                                "place": conf.get("place"),
-                                "link": conf.get("link"),
-                                "abs_deadline": convert_to_cst(
-                                    target_tl.get("abstract_deadline"),
-                                    conf.get("timezone"),
-                                ),
-                                "main_deadline": convert_to_cst(
-                                    target_tl.get("deadline"), conf.get("timezone")
+                            + (" (已过)" if status == "已截止" else ""),
+                        }
+
+                        # 深度补全历史分析（静默执行，不触发通知）
+                        for y in target_years:
+                            str_y = str(y)
+                            if str_y not in kb[dblp_name]:
+                                print(f"   [Deep Filling] Analyzing {dblp_name} {y}...")
+                                res = analyze_year_data(
+                                    dblp_name,
+                                    y,
+                                    info["title"],
+                                    max_papers=MAX_PAPERS_PER_YEAR,
                                 )
-                                + (" (已过)" if status == "已截止" else ""),
-                            }
+                                if res:
+                                    kb[dblp_name][str_y] = res
+                                    changes_detected = True
 
-                            # 历史数据获取：从当前最新年份往前推 3 年 (e.g. 2025 -> 2024, 2023, 2022)
-                            if dblp_name not in kb:
-                                kb[dblp_name] = {}
-                            target_years = [current_conf_year - i for i in range(1, 4)]
+                        # C. 发送通知判定逻辑优化
+                        # 条件：1. 指纹有变动；2. 不是首次部署；3. 截止日期还没过
+                        if is_new_update or local_test_file:
+                            state[conf_id] = fingerprint
+                            changes_detected = True
 
-                            for y in target_years:
-                                str_y = str(y)
-                                if str_y not in kb[dblp_name]:
-                                    print(
-                                        f"   [DBLP Analysis] Fetching {dblp_name} for year {y}..."
-                                    )
-                                    res = analyze_year_data(
-                                        dblp_name,
-                                        y,
-                                        info["title"],
-                                        max_papers=MAX_PAPERS_PER_YEAR,
-                                    )
-                                    if res:
-                                        kb[dblp_name][str_y] = res
-
-                            # 推送通知 (初始化模式不推送，防止爆表)
                             if not is_initial_run:
-                                msg_body = get_notification_body(
-                                    info, kb.get(dblp_name)
-                                )
-                                send_pushplus(f"{info['title']} 更新提醒", msg_body)
-                                mail_body = get_email_body(info, kb.get(dblp_name))
-                                send_email(f"{info['title']} 更新提醒", mail_body)
-                        else:
-                            # 如果不是最新年份，仅更新状态指纹，不触发深度分析和推送
-                            continue
+                                if status != "已截止":
+                                    print(
+                                        f"🚀 Sending Notification for: {conf_id} (Status: {status})"
+                                    )
+                                    msg_body = get_notification_body(
+                                        info, kb.get(dblp_name)
+                                    )
+                                    send_pushplus(f"{info['title']} 更新提醒", msg_body)
+                                    mail_body = get_email_body(info, kb.get(dblp_name))
+                                    send_email(f"{info['title']} 更新提醒", mail_body)
+                                else:
+                                    print(
+                                        f"   [Notify Skip] {conf_id} updated but already expired."
+                                    )
 
-    # 无论是否为测试模式，只要有变动就保存，确保知识库不断累积
+    # 统一保存所有变化
     if changes_detected:
         os.makedirs(DATA_DIR, exist_ok=True)
         with open(STATE_FILE, "w") as f:
             json.dump(state, f, indent=2)
         with open(KB_FILE, "w") as f:
             json.dump(kb, f, indent=2)
-        print(f"✅ Data saved to {STATE_FILE} and {KB_FILE}")
+        print(f"✅ Data saved.")
 
 
 # --- 本地测试入口 ---
