@@ -45,6 +45,21 @@ CCF_SUB_MAP = {
 }
 
 
+def save_data(state, kb):
+    os.makedirs(DATA_DIR, exist_ok=True)
+    with open(STATE_FILE, "w") as f:
+        json.dump(state, f, indent=2)
+    with open(KB_FILE, "w", encoding="utf-8") as f:
+        json.dump(kb, f, indent=2, ensure_ascii=False)
+
+
+def get_kb():
+    if os.path.exists(KB_FILE):
+        with open(KB_FILE, "r", encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
 # --- 模块 1: 时区处理 ---
 def get_timezone_offset(tz_str):
     tz = tz_str.strip().upper() if tz_str else "UTC"
@@ -518,149 +533,209 @@ def get_timeline_status(timeline_list, timezone_str):
     return timeline_list[-1], "已截止"
 
 
+def get_meta_from_data(data, conf):
+    target_tl, status = get_timeline_status(
+        conf.get("timeline", []), conf.get("timezone")
+    )
+    sub_code = data.get("sub", "")
+    return {
+        "title": data.get("title"),
+        "description": data.get("description"),
+        "sub": CCF_SUB_MAP.get(sub_code, sub_code),
+        "rank": data.get("rank", {}).get("ccf"),
+        "year": conf.get("year"),
+        "date": conf.get("date"),
+        "place": conf.get("place"),
+        "link": conf.get("link"),
+        "abs_deadline": convert_to_cst(
+            target_tl.get("abstract_deadline"), conf.get("timezone")
+        ),
+        "main_deadline": convert_to_cst(target_tl.get("deadline"), conf.get("timezone"))
+        + (" (已过)" if status == "已截止" else ""),
+        "status": status,
+    }
+
+
 def process_updates(local_test_file=None):
-    """
-    核心处理逻辑：
-    1. 自动补全缺失的知识库数据（补全时不通知）。
-    2. 仅在会议更新且截止日期未过期时发送通知。
-    """
-    # 1. 加载持久化数据
-    state, kb = {}, {}
+    state, kb = {}, get_kb()
     if os.path.exists(STATE_FILE):
         with open(STATE_FILE, "r") as f:
             state = json.load(f)
-    if os.path.exists(KB_FILE):
-        with open(KB_FILE, "r") as f:
-            kb = json.load(f)
 
-    is_initial_run = not bool(state)
-    changes_detected = False
-    files_to_process = [local_test_file] if local_test_file else []
-
+    is_initial_run, changes = not bool(state), False
+    files = [local_test_file] if local_test_file else []
     if not local_test_file:
-        for root, _, files in os.walk(CCF_PATH):
-            for f in files:
+        for r, _, fs in os.walk(CCF_PATH):
+            for f in fs:
                 if f.endswith(".yml"):
-                    files_to_process.append(os.path.join(root, f))
+                    files.append(os.path.join(r, f))
 
-    for file_path in files_to_process:
-        with open(file_path, "r", encoding="utf-8") as f:
+    for fp in files:
+        with open(fp, "r", encoding="utf-8") as f:
             try:
-                raw_data = yaml.safe_load(f)
-                data_list = raw_data if isinstance(raw_data, list) else [raw_data]
-            except Exception as e:
-                print(f"   [Error] Load failed {file_path}: {e}")
+                raw = yaml.safe_load(f)
+                data_list = raw if isinstance(raw, list) else [raw]
+            except:
                 continue
-
             for data in data_list:
                 if not data:
                     continue
-
-                # 领域过滤
                 sub_code = data.get("sub", "")
                 if "ALL" not in INTERESTED_AREAS and sub_code not in INTERESTED_AREAS:
                     continue
 
-                # 如果 YAML 里的 dblp 修正了，这里会得到新的 key
                 dblp_name = data.get("dblp") or data.get("title", "").lower()
                 all_confs = data.get("confs", [])
                 if not all_confs:
                     continue
-
-                # 确定该会议的最新年份条目
-                max_year_in_data = max(c.get("year", 0) for c in all_confs)
+                max_y = max(c.get("year", 0) for c in all_confs)
 
                 for conf in all_confs:
-                    current_conf_year = conf.get("year")
-                    # 只针对最新年份的条目进行逻辑处理
-                    if current_conf_year != max_year_in_data:
+                    if conf.get("year") != max_y:
                         continue
+                    cid = str(conf.get("id"))
+                    fp_dict = {"year": max_y, "timeline": conf.get("timeline", [{}])[0]}
+                    is_upd = state.get(cid) != fp_dict
 
-                    conf_id = str(conf.get("id"))
-                    tl_data = conf.get("timeline", [{}])[0]
-                    fingerprint = {"year": current_conf_year, "timeline": tl_data}
-
-                    # A. 状态更新判定（指纹对比）
-                    old_fp = state.get(conf_id)
-                    is_new_update = old_fp != fingerprint
-
-                    # B. 知识库补全判定（只要缺失就补）
                     if dblp_name not in kb:
                         kb[dblp_name] = {}
 
-                    target_years = [current_conf_year - i for i in range(1, 4)]
-                    kb_missing = any(str(y) not in kb[dblp_name] for y in target_years)
+                    # 总是更新元数据缓存
+                    info = get_meta_from_data(data, conf)
+                    kb[dblp_name]["metadata_cache"] = info
 
-                    # 只要发生指纹更新、数据缺失或处于测试模式，就需要执行基础分析
-                    if is_new_update or kb_missing or local_test_file:
-                        target_tl, status = get_timeline_status(
-                            conf.get("timeline", []), conf.get("timezone")
-                        )
+                    target_ys = [max_y - i for i in range(1, 4)]
+                    kb_missing = any(str(y) not in kb[dblp_name] for y in target_ys)
 
-                        # 转换显示信息
-                        info = {
-                            "title": data.get("title"),
-                            "description": data.get("description"),
-                            "sub": CCF_SUB_MAP.get(sub_code, sub_code),
-                            "rank": data.get("rank", {}).get("ccf"),
-                            "year": current_conf_year,
-                            "date": conf.get("date"),
-                            "place": conf.get("place"),
-                            "link": conf.get("link"),
-                            "abs_deadline": convert_to_cst(
-                                target_tl.get("abstract_deadline"), conf.get("timezone")
-                            ),
-                            "main_deadline": convert_to_cst(
-                                target_tl.get("deadline"), conf.get("timezone")
-                            )
-                            + (" (已过)" if status == "已截止" else ""),
-                        }
-
-                        # 深度补全历史分析（静默执行，不触发通知）
-                        for y in target_years:
-                            str_y = str(y)
-                            if str_y not in kb[dblp_name]:
-                                print(f"   [Deep Filling] Analyzing {dblp_name} {y}...")
+                    if is_upd or kb_missing or local_test_file:
+                        for y in target_ys:
+                            if str(y) not in kb[dblp_name]:
+                                print(f"   [Deep Analysis] {dblp_name} {y}...")
                                 res = analyze_year_data(
-                                    dblp_name,
-                                    y,
-                                    info["title"],
-                                    max_papers=MAX_PAPERS_PER_YEAR,
+                                    dblp_name, y, info["title"], MAX_PAPERS_PER_YEAR
                                 )
                                 if res:
-                                    kb[dblp_name][str_y] = res
-                                    changes_detected = True
+                                    kb[dblp_name][str(y)] = res
+                                    changes = True
 
-                        # C. 发送通知判定逻辑优化
-                        # 条件：1. 指纹有变动；2. 不是首次部署；3. 截止日期还没过
-                        if is_new_update or local_test_file:
-                            state[conf_id] = fingerprint
-                            changes_detected = True
+                        if is_upd or local_test_file:
+                            state[cid] = fp_dict
+                            changes = True
+                            if not is_initial_run and info["status"] != "已截止":
+                                print(f"🚀 Notifying: {info['title']}")
+                                send_pushplus(
+                                    f"{info['title']} 更新提醒",
+                                    get_notification_body(info, kb[dblp_name]),
+                                )
+                                send_email(
+                                    f"{info['title']} 更新提醒",
+                                    get_email_body(info, kb[dblp_name]),
+                                )
+    if changes:
+        save_data(state, kb)
 
-                            if not is_initial_run:
-                                if status != "已截止":
-                                    print(
-                                        f"🚀 Sending Notification for: {conf_id} (Status: {status})"
-                                    )
-                                    msg_body = get_notification_body(
-                                        info, kb.get(dblp_name)
-                                    )
-                                    send_pushplus(f"{info['title']} 更新提醒", msg_body)
-                                    mail_body = get_email_body(info, kb.get(dblp_name))
-                                    send_email(f"{info['title']} 更新提醒", mail_body)
-                                else:
-                                    print(
-                                        f"   [Notify Skip] {conf_id} updated but already expired."
-                                    )
 
-    # 统一保存所有变化
-    if changes_detected:
-        os.makedirs(DATA_DIR, exist_ok=True)
-        with open(STATE_FILE, "w") as f:
-            json.dump(state, f, indent=2)
-        with open(KB_FILE, "w") as f:
-            json.dump(kb, f, indent=2)
-        print(f"✅ Data saved.")
+def run_search(keyword, local_mode=False, test_file=None):
+    kb = get_kb()
+    print(f"🔍 Searching local DB for '{keyword}'...")
+
+    # 1. 尝试本地匹配
+    matches = [
+        k
+        for k in kb
+        if keyword.lower() in k.lower()
+        or keyword.lower() in kb[k].get("metadata_cache", {}).get("title", "").lower()
+    ]
+
+    if local_mode:
+        if not matches:
+            print("❌ Local DB: No match.")
+            return
+        for k in matches:
+            print(f"\n--- {k} ---")
+            print(json.dumps(kb[k], indent=2, ensure_ascii=False))
+        return
+
+    # 2. 非本地测试模式：寻找并补全
+    source_found, final_info, final_key = False, None, None
+
+    if matches:
+        final_key = matches[0]
+        if "metadata_cache" in kb[final_key]:
+            final_info = kb[final_key]["metadata_cache"]
+            source_found = True
+
+    # 如果本地缺失元数据或没搜到，查源文件
+    if not source_found:
+        print("   Metadata missing, scanning YAMLs...")
+        search_paths = [test_file] if test_file else []
+        if not test_file:
+            for r, _, fs in os.walk(CCF_PATH):
+                for f in fs:
+                    if f.endswith(".yml"):
+                        search_paths.append(os.path.join(r, f))
+
+        for fp in search_paths:
+            with open(fp, "r", encoding="utf-8") as f:
+                try:
+                    raw = yaml.safe_load(f)
+                    data_list = raw if isinstance(raw, list) else [raw]
+                    for data in data_list:
+                        if (
+                            keyword.lower() in data.get("title", "").lower()
+                            or keyword.lower() in (data.get("dblp") or "").lower()
+                        ):
+                            confs = data.get("confs", [])
+                            if confs:
+                                latest = max(confs, key=lambda x: x.get("year", 0))
+                                final_info = get_meta_from_data(data, latest)
+                                final_key = (
+                                    data.get("dblp") or data.get("title", "").lower()
+                                )
+                                if final_key not in kb:
+                                    kb[final_key] = {}
+                                kb[final_key]["metadata_cache"] = final_info
+                                source_found = True
+                                break
+                except:
+                    continue
+            if source_found:
+                break
+
+    if not source_found:
+        msg = f"❌ 未找到与 '{keyword}' 相关的会议。"
+        print(msg)
+        send_pushplus("查询失败", msg)
+        send_email("查询失败", msg)
+        return
+
+    # 3. 检查并补全 AI 数据
+    max_y = final_info["year"]
+    target_ys = [max_y - i for i in range(1, 4)]
+    needs_save = False
+    for y in target_ys:
+        if str(y) not in kb[final_key]:
+            print(f"   [Auto Fill] Analyzing {final_key} {y}...")
+            res = analyze_year_data(
+                final_key, y, final_info["title"], MAX_PAPERS_PER_YEAR
+            )
+            if res:
+                kb[final_key][str(y)] = res
+                needs_save = True
+
+    if needs_save:
+        with open(STATE_FILE, "r") as f:
+            state = json.load(f)
+        save_data(state, kb)
+
+    print(f"✅ Found: {final_info['title']}. Sending push...")
+    send_pushplus(
+        f"查询结果: {final_info['title']}",
+        get_notification_body(final_info, kb[final_key]),
+    )
+    send_email(
+        f"查询结果: {final_info['title']}", get_email_body(final_info, kb[final_key])
+    )
 
 
 # --- 本地测试入口 ---
@@ -678,14 +753,15 @@ def run_local_test(yml_path):
 if __name__ == "__main__":
     args_parser = argparse.ArgumentParser()
     args_parser.add_argument("--test", help="Path to a single yml file to test")
+    args_parser.add_argument(
+        "--query", help="Keyword to search for a conference (Manual mode)"
+    )
+    args_parser.add_argument("--local", action="store_true", help="Local print only")
     args = args_parser.parse_args()
 
-    if args.test:
-        # run_local_test 函数逻辑不变，只需确保它调用 process_updates
-        print(f"🔧 Starting LOCAL TEST with file: {args.test}")
-        if not os.path.exists(args.test):
-            print(f"❌ File not found: {args.test}")
-        else:
-            process_updates(local_test_file=args.test)
+    if args.query:
+        run_search(args.query, local_mode=args.local, test_file=args.test)
+    elif args.test:
+        process_updates(local_test_file=args.test)
     else:
         process_updates()
