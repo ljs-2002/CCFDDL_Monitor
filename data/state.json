@@ -1,0 +1,966 @@
+{
+  "acl26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-01-05 23:59:59"
+    }
+  },
+  "ijcnn2026": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-01-31 23:59:59"
+    }
+  },
+  "iccv25": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2025-03-04 09:59:59",
+      "deadline": "2025-03-08 09:59:59"
+    }
+  },
+  "esann26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-11-19 23:59:59"
+    }
+  },
+  "ppsn26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-03-28 23:59:59"
+    }
+  },
+  "aistats26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-09-25 23:59:59",
+      "deadline": "2025-10-02 23:59:59"
+    }
+  },
+  "nips25": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2025-05-11 23:59:59",
+      "deadline": "2025-05-15 23:59:59"
+    }
+  },
+  "corl25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-04-30 23:59:59"
+    }
+  },
+  "ksem26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-01-15 23:59:59"
+    }
+  },
+  "aamas26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-10-01 23:59:59",
+      "deadline": "2025-10-08 23:59:59"
+    }
+  },
+  "iconip2025": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-05-22 23:59:59"
+    }
+  },
+  "cec2025": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-01-15 23:59:59"
+    }
+  },
+  "icann2026": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-03-16 23:59:59"
+    }
+  },
+  "icpr26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-12-20 23:59:59"
+    }
+  },
+  "fgr26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-09-25 23:59:59",
+      "deadline": "2025-10-02 23:59:59",
+      "comment": "Round 1"
+    }
+  },
+  "colm26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-03-26 23:59:59",
+      "deadline": "2026-03-31 23:59:59"
+    }
+  },
+  "cvpr26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-11-06 23:59:00",
+      "deadline": "2025-11-13 23:59:00"
+    }
+  },
+  "icdar2026": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-02-13 23:59:59",
+      "deadline": "2026-02-27 23:59:59"
+    }
+  },
+  "alt2026": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-02 09:59:59"
+    }
+  },
+  "ijcnlp2025": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-07-28 23:59:59",
+      "comment": "ACL Rolling Review"
+    }
+  },
+  "iros25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-03-01 23:59:59"
+    }
+  },
+  "iclr26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-09-19 23:59:59",
+      "deadline": "2025-09-24 23:59:59"
+    }
+  },
+  "cpal26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-12-05 23:59:59"
+    }
+  },
+  "iccbr2026": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-03-20 23:59:59"
+    }
+  },
+  "rss26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-01-23 23:59:00",
+      "deadline": "2026-01-30 23:59:00"
+    }
+  },
+  "nlpcc2025": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-04-20 23:59:59"
+    }
+  },
+  "ecai25": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2025-04-29 23:59:59",
+      "deadline": "2025-05-06 23:59:59"
+    }
+  },
+  "wacv26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-07-11 23:59:00",
+      "deadline": "2025-07-18 23:59:59",
+      "comment": "First round"
+    }
+  },
+  "icaps26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-12-02 23:59:59",
+      "deadline": "2025-12-08 23:59:59"
+    }
+  },
+  "eccv26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "TBD",
+      "deadline": "2026-03-06 13:00:00"
+    }
+  },
+  "krd26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-02-08 23:59:59",
+      "deadline": "2026-02-13 23:59:59"
+    }
+  },
+  "icml26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-01-24 11:59:59",
+      "deadline": "2026-01-29 11:59:59",
+      "comment": "Paper Submissions Open on OpenReview Jan 08 2026 12:00AM UTC-0"
+    }
+  },
+  "conll26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-02-19 23:59:59"
+    }
+  },
+  "ictai21": {
+    "year": 2021,
+    "timeline": {
+      "deadline": "2021-06-20 23:59:00"
+    }
+  },
+  "acml25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-05-30 23:59:59",
+      "comment": "Journal Track"
+    }
+  },
+  "naacl25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2024-10-15 23:59:59"
+    }
+  },
+  "aaai26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-07-25 23:59:59",
+      "deadline": "2025-08-01 23:59:59"
+    }
+  },
+  "emnlp25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-05-19 23:59:59"
+    }
+  },
+  "uai25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-02-10 23:59:59"
+    }
+  },
+  "colt25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-02-06 16:59:59"
+    }
+  },
+  "accv26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-07-05 23:59:59"
+    }
+  },
+  "cicai23": {
+    "year": 2023,
+    "timeline": {
+      "deadline": "2023-06-30 23:59:59"
+    }
+  },
+  "gecco26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-01-19 23:59:00",
+      "deadline": "2026-01-26 23:59:00",
+      "comment": "Full papers (traditional category) "
+    }
+  },
+  "ijcb2026": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-04-10 23:59:59"
+    }
+  },
+  "coling25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2024-09-16 23:59:59",
+      "comment": "First Call for Main Conference Papers"
+    }
+  },
+  "log2025": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2025-08-22 23:59:59",
+      "deadline": "2025-08-29 23:59:59"
+    }
+  },
+  "eacl26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-06 23:59:59"
+    }
+  },
+  "icra26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-09-15 23:59:00"
+    }
+  },
+  "pricai2025": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-06-27 23:59:59"
+    }
+  },
+  "rulemlrr2026": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-05-08 23:59:59",
+      "deadline": "2026-05-15 23:59:59"
+    }
+  },
+  "ijcai26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-01-12 23:59:59",
+      "deadline": "2026-01-19 23:59:59"
+    }
+  },
+  "bmvc26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "TBD",
+      "deadline": "TBD"
+    }
+  },
+  "ifip119'26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-09-30 23:59:59",
+      "comment": "Submission Deadline"
+    }
+  },
+  "crypto26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-02-12 23:59:59"
+    }
+  },
+  "ct-rsa26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-24 23:59:59",
+      "comment": "Paper submission deadline"
+    }
+  },
+  "hotsec21": {
+    "year": 2021,
+    "timeline": {
+      "deadline": "2021-10-12 23:59:59",
+      "comment": "Extended"
+    }
+  },
+  "ndss26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-04-16 23:59:59",
+      "deadline": "2025-04-23 23:59:59",
+      "comment": "Summer"
+    }
+  },
+  "dimva26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-12-03 23:59:59",
+      "comment": "Cycle 1 submission deadline"
+    }
+  },
+  "eurosp26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-11-20 23:59:59"
+    }
+  },
+  "pets26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-05-31 23:59:59",
+      "comment": "Issue 1 Paper Submission Deadline"
+    }
+  },
+  "asiaccs26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-08-25 23:59:59",
+      "comment": "1st round Deadline"
+    }
+  },
+  "srds25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-04-25 23:59:59",
+      "comment": "Abstract Submission"
+    }
+  },
+  "acisp26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-11-27 23:59:59",
+      "comment": "1st round Deadline"
+    }
+  },
+  "acsac25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-05-30 23:59:59"
+    }
+  },
+  "ih&mmsec26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-02-16 23:59:59",
+      "comment": "Submission Deadline"
+    }
+  },
+  "icics25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-02-28 23:59:59",
+      "comment": "First round"
+    }
+  },
+  "uss26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-08-19 23:59:59",
+      "deadline": "2025-08-26 23:59:59",
+      "comment": "Cycle 1 Deadline"
+    }
+  },
+  "trustcom26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-05-01 23:59:59"
+    }
+  },
+  "raid25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-04-24 23:59:59"
+    }
+  },
+  "inscrypt25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-04-15 23:59:59",
+      "comment": "1st Round"
+    }
+  },
+  "nspw25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-04-11 23:59:59"
+    }
+  },
+  "sac26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-02-02 23:59:59",
+      "comment": "Paper submission deadline (cycle 1)"
+    }
+  },
+  "fc26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-09-16 23:59:59",
+      "comment": "Submission deadline"
+    }
+  },
+  "eurocrypt26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-02 23:59:59"
+    }
+  },
+  "indocrypt25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-09-01 23:59:59"
+    }
+  },
+  "securecomm26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-12-15 23:59:59"
+    }
+  },
+  "asiacrypt25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-05-16 11:59:59"
+    }
+  },
+  "sp26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-06-05 23:59:59",
+      "comment": "First Paper submission deadline"
+    }
+  },
+  "pkc26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-24 23:59:59"
+    }
+  },
+  "ches26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-07-15 23:59:59",
+      "comment": "Schedule for TCHES Volume 2026/1"
+    }
+  },
+  "sacmat26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-27 23:59:59",
+      "comment": "First Cycle"
+    }
+  },
+  "soups25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-02-06 23:59:59",
+      "comment": "Mandatory Paper Registration Deadline"
+    }
+  },
+  "satml26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-09-24 23:59:59"
+    }
+  },
+  "isc25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-06-04 23:59:59",
+      "comment": "Submission Deadline"
+    }
+  },
+  "csfw26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-07-24 23:59:59",
+      "comment": "Summer"
+    }
+  },
+  "tcc25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-05-27 23:59:59"
+    }
+  },
+  "esorics26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-01-09 23:59:59",
+      "comment": "First Submission deadline"
+    }
+  },
+  "fse26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-03-01 23:59:59",
+      "comment": "ToSC, Volume 2025, Issue 2 Submission deadline"
+    }
+  },
+  "dfrws-apac25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-05-23 23:59:59"
+    }
+  },
+  "pam26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-15 23:59:59"
+    }
+  },
+  "sec26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-12-19 23:59:59",
+      "comment": "Submission deadline"
+    }
+  },
+  "noms26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-13 19:59:59"
+    }
+  },
+  "dsn26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-11-27 23:59:59",
+      "deadline": "2025-12-04 23:59:59"
+    }
+  },
+  "ccs26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-01-14 23:59:59",
+      "comment": "First Review Cycle"
+    }
+  },
+  "acns26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-09-26 23:59:59",
+      "comment": "Cycle 1 Submission deadline"
+    }
+  },
+  "dfrws26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-09-19 23:59:59",
+      "deadline": "2025-09-26 23:59:59"
+    }
+  },
+  "icdf2c26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-01-20 23:59:59"
+    }
+  },
+  "wisec26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-11-18 23:59:59",
+      "comment": "First Cycle deadline"
+    }
+  },
+  "wsdm26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-08-07 23:59:59",
+      "deadline": "2025-08-14 23:59:59"
+    }
+  },
+  "edbt26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-02-05 23:59:59"
+    }
+  },
+  "recsys26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "TBD",
+      "deadline": "TBD"
+    }
+  },
+  "apweb25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-03-02 23:59:59",
+      "comment": "first round"
+    }
+  },
+  "icde26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-06-18 17:00:00",
+      "comment": "first round"
+    }
+  },
+  "adma26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "TBD"
+    }
+  },
+  "vldb26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-04-01 17:00:00"
+    }
+  },
+  "sigmod27": {
+    "year": 2027,
+    "timeline": {
+      "abstract_deadline": "2026-01-10 23:59:00",
+      "deadline": "2026-01-17 23:59:00",
+      "comment": "round 1"
+    }
+  },
+  "ecir26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-09-25 23:59:59",
+      "deadline": "2025-10-02 23:59:59"
+    }
+  },
+  "icdt26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-03-13 23:59:59",
+      "deadline": "2025-03-20 23:59:59"
+    }
+  },
+  "dasfaa26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-10-20 23:59:59",
+      "deadline": "2025-10-27 23:59:59"
+    }
+  },
+  "sdm2025": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2024-09-27 23:59:59",
+      "deadline": "2024-10-04 23:59:59"
+    }
+  },
+  "iswc26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "TBD",
+      "deadline": "TBD"
+    }
+  },
+  "cidr26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-08-05 23:59:59"
+    }
+  },
+  "sigir26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-01-15 23:59:59",
+      "deadline": "2026-01-22 23:59:59"
+    }
+  },
+  "sigkdd26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-07-24 23:59:59",
+      "deadline": "2025-07-31 23:59:59",
+      "comment": "1st round of 2 total rounds"
+    }
+  },
+  "pakdd26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-11-15 23:59:59"
+    }
+  },
+  "cikm25": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2025-05-16 23:59:59",
+      "deadline": "2025-05-23 23:59:59"
+    }
+  },
+  "icdm2026": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-05-30 23:59:59",
+      "deadline": "2026-06-06 23:59:59"
+    }
+  },
+  "ecmlpkdd2026": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "TBD",
+      "deadline": "TBD"
+    }
+  },
+  "pods25": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2024-05-31 17:00:00",
+      "deadline": "2024-06-07 17:00:00",
+      "comment": "FIRST SUBMISSION CYCLE"
+    }
+  },
+  "nossdav25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-01-17 23:59:59"
+    }
+  },
+  "wowmom26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-11-18 23:59:59",
+      "deadline": "2025-12-05 23:59:59"
+    }
+  },
+  "forte26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "TBD",
+      "deadline": "TBD"
+    }
+  },
+  "apnet26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-03-06 23:59:59"
+    }
+  },
+  "wicon2025": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-10-20 23:59:59"
+    }
+  },
+  "conext26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-12-05 23:59:59",
+      "deadline": "2025-12-12 23:59:59",
+      "comment": "December Cycle"
+    }
+  },
+  "icc26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-10-31 00:59:59"
+    }
+  },
+  "globecom26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "TBD"
+    }
+  },
+  "mobihoc22": {
+    "year": 2022,
+    "timeline": {
+      "abstract_deadline": "2022-02-25 23:59:59",
+      "deadline": "2022-03-04 23:59:59"
+    }
+  },
+  "wasa26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-03-15 23:59:59"
+    }
+  },
+  "nsdi26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-04-18 23:59:59",
+      "deadline": "2025-04-25 23:59:59"
+    }
+  },
+  "ipsn22": {
+    "year": 2022,
+    "timeline": {
+      "abstract_deadline": "2021-10-22 23:59:59",
+      "deadline": "2021-10-29 23:59:59"
+    }
+  },
+  "mobisys26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-11-28 23:59:59",
+      "deadline": "2025-12-05 23:59:59"
+    }
+  },
+  "mobicom26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-08-27 23:59:59",
+      "deadline": "2025-09-03 23:59:59",
+      "comment": "Summer Deadlines"
+    }
+  },
+  "icccn26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2026-02-13 23:59:59"
+    }
+  },
+  "imc26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-11-13 23:59:59",
+      "deadline": "2025-11-20 23:59:59",
+      "comment": "Cycle 1 Deadline"
+    }
+  },
+  "icnp25": {
+    "year": 2025,
+    "timeline": {
+      "abstract_deadline": "2025-05-09 23:59:59",
+      "deadline": "2025-05-16 23:59:59"
+    }
+  },
+  "secon26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-12-08 23:59:59",
+      "deadline": "2025-12-30 23:59:59"
+    }
+  },
+  "infocom26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-07-24 23:59:59",
+      "deadline": "2025-07-31 23:59:59"
+    }
+  },
+  "wcnc26": {
+    "year": 2026,
+    "timeline": {
+      "deadline": "2025-09-14 23:59:59"
+    }
+  },
+  "sensys26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-06-24 23:59:00",
+      "deadline": "2025-07-01 23:59:00",
+      "comment": "1st deadline"
+    }
+  },
+  "mmsys26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2025-11-14 23:59:59",
+      "deadline": "2025-11-21 23:59:59",
+      "comment": "Round 2 deadline"
+    }
+  },
+  "iwqos26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-02-02 23:59:59",
+      "deadline": "2026-02-09 23:59:59"
+    }
+  },
+  "msn25": {
+    "year": 2025,
+    "timeline": {
+      "deadline": "2025-09-15 23:59:59"
+    }
+  },
+  "sigcomm26": {
+    "year": 2026,
+    "timeline": {
+      "abstract_deadline": "2026-01-30 23:59:59",
+      "deadline": "2026-02-06 23:59:59"
+    }
+  }
+}
