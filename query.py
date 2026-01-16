@@ -110,7 +110,8 @@ def fetch_dblp_papers(dblp_venue_key, year, conf_display_name, limit=1000):
     """
     papers = []
     # 定义尝试查询的关键词列表
-    search_attempts = [dblp_venue_key, conf_display_name]
+    search_attempts = [str(dblp_venue_key).lower(), str(conf_display_name).lower()]
+    search_attempts = list(set(search_attempts))
 
     for current_key in search_attempts:
         if not current_key:
