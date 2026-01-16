@@ -1,11 +1,11 @@
 # CCF Deadline Monitor 🚀
 
-这是一个高度自动化的 CCF 会议监控与学术趋势分析工具。它能够同步 [ccfddl/ccf-deadlines](https://github.com/ccfddl/ccf-deadlines) 的最新动态，并通过 LLM 对 DBLP 历年收录论文进行深度聚类，识别会议的研究趋势。
+这是一个高度自动化的 CCF 会议监控与学术趋势分析工具。它能够同步 [ccfddl/ccf-deadlines](https://github.com/ccfddl/ccf-deadlines) 的最新动态，并通过 LLM 对 DBLP 上各会议历年收录论文进行分析，总结各会议的收录趋势。
 
 ## ✨ 核心功能
 
 - **🧠 深度学术画像**：基于论文标题提取“问题/领域”导向的标签，并进行高层级研究主题聚类。
-- **🔔 智能更新提醒**：实时监控关注领域的会议变动（如新增会议、截稿日期修改等）。一旦触发更新，系统将自动发送提醒通知，并同步附带由 LLM 生成的该会议近 3 年学术研究趋势分析。
+- **🔔 智能更新提醒**：实时监控**关注领域**的会议变动（如新增会议、截稿日期修改等）。一旦触发更新，系统将自动发送提醒通知，并同步附带由 LLM 生成的该会议近 3 年学术研究趋势分析。
 - **🔍 交互式即时查询**：通过 GitHub Discussions 或手动触发，随时调取特定会议的深度报告。
 - **📢 多通道精准通知**：支持 **PushPlus 微信推送**（Markdown 渲染）和 **SMTP 邮件**。
 - **⚡ 高性能并行分析**：采用多线程并发请求 LLM，大幅提升历史论文的分析速度。
@@ -94,6 +94,7 @@
 ├── .github/workflows/main.yml  # GitHub Actions 自动化配置
 ├── query.py                    # 核心处理脚本
 ├── requirements.txt            # Python 依赖
+├── LICENSE                     # 许可证
 └── README.md                   # 项目说明
 ```
 
