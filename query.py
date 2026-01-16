@@ -287,7 +287,11 @@ def get_notification_body(info, kb_record):
     rank_html = f'<font color="{color}">CCF-{rank}</font>'
 
     # 1. 获取近 3 年数据并按年份倒序
-    years = sorted(kb_record.keys(), reverse=True)[:3] if kb_record else []
+    years = (
+        sorted([k for k in kb_record.keys() if k.isdigit()], reverse=True)[:3]
+        if kb_record
+        else []
+    )
 
     analysis_section = ""
 
@@ -360,7 +364,11 @@ def get_email_body(info, kb_record):
     """
     组装纯文本邮件内容（无 Markdown 符号）
     """
-    years = sorted(kb_record.keys(), reverse=True)[:3] if kb_record else []
+    years = (
+        sorted([k for k in kb_record.keys() if k.isdigit()], reverse=True)[:3]
+        if kb_record
+        else []
+    )
 
     analysis_text = ""
     if not years:
