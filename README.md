@@ -91,11 +91,8 @@
 
 ```text
 .
-├── .github/workflows/main.yml  # GitHub Actions 自动化配置 (包含并发控制)
-├── data/
-│   ├── state.json              # [自动生成] 会议更新指纹库
-│   └── knowledge_base.json     # [自动生成] AI 学术趋势知识库
-├── query.py                    # 核心处理脚本 (多线程版)
+├── .github/workflows/main.yml  # GitHub Actions 自动化配置
+├── query.py                    # 核心处理脚本
 ├── requirements.txt            # Python 依赖
 └── README.md                   # 项目说明
 ```
