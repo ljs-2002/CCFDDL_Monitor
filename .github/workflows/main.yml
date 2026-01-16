@@ -80,8 +80,10 @@ jobs:
           
           # 2. 手动按钮触发
           elif [[ "${{ github.event_name }}" == "workflow_dispatch" ]]; then
-            if [[ "${{ github.event_inputs.conference_name }}" != "" ]]; then
-              python query.py --query "${{ github.event.inputs.conference_name }}"
+            CONF_NAME="${{ github.event.inputs.conference_name }}"
+            if [[ -n "$CONF_NAME" ]]; then
+              echo "🔍 手动查询会议: $CONF_NAME"
+              python -u query.py --query "$CONF_NAME"
             else
               python -u query.py
             fi
