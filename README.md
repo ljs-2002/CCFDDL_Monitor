@@ -37,7 +37,7 @@
 | :--- | :--- | :--- |
 | `LLM_API_KEY` | LLM 的授权密钥 | `sk-xxxx...` |
 | `DATA_REPO` | **私有数据仓库路径** | `您的用户名/ccf-data-storage` |
-| `DATA_REPO_TOKEN` | **PAT 访问令牌 (Classic)** | `ghp_xxxx...` |
+| `DATA_REPO_TOKEN` | **第一步中生成的访问令牌 (Classic)** | `ghp_xxxx...` |
 
 #### 2. LLM 与性能设置 (可选)
 | 变量名 | 说明 | 默认值 | 示例/建议 |
