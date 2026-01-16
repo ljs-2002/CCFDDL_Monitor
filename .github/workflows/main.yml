@@ -22,10 +22,18 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Search Repo
+      - name: Checkout Code Repo
         uses: actions/checkout@v4
         with:
           path: '.'
+
+      # 2. 检出私有数据仓库到 data 目录
+      - name: Checkout Private Data Repo
+        uses: actions/checkout@v4
+        with:
+          repository: ${{ secrets.DATA_REPO }}
+          token: ${{ secrets.DATA_REPO_TOKEN }}
+          path: 'data' # 关键：直接映射到脚本需要的 data 文件夹                     # 重点：直接拉取到代码仓的 data 目录下
 
       - name: Checkout CCF-Deadlines Source
         uses: actions/checkout@v4
@@ -93,14 +101,15 @@ jobs:
             python -u query.py
           fi
 
-      - name: Commit and Push changes
+      - name: Push Changes to Private Data Repo
+        working-directory: 'data' # 只在 data 文件夹内操作
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add -f data/*.json
-          git commit -m "Update CCF state and knowledge base [skip ci]" || echo "No changes to commit"
-          git pull --rebase origin main
-          git push
+          git add .
+          git commit -m "Update Knowledge Base [skip ci]" || echo "No changes to commit"
+          # 使用 Token 强制推送回私有库
+          git push "https://x-access-token:${{ secrets.DATA_REPO_TOKEN }}@github.com/${{ secrets.DATA_REPO }}.git" HEAD:main
       
       - name: Cleanup old workflow runs
         env:
