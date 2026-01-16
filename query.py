@@ -101,56 +101,63 @@ def convert_to_cst(date_str, timezone_str):
 
 
 # --- 模块 2: DBLP 数据获取 ---
-def fetch_dblp_papers(dblp_venue_key, year, limit=1000):
+def fetch_dblp_papers(dblp_venue_key, year, conf_display_name, limit=1000):
     """
     获取论文标题和链接
     dblp_venue_key: 例如 'iwqos', 'iccv'
     year: 例如 2022
+    conf_display_name: 会议展示全称，作为 fallback 查询
     """
-    print(
-        f"   [DBLP] Fetching venue:'{dblp_venue_key}' year:'{year}' (Limit: {limit})..."
-    )
     papers = []
+    # 定义尝试查询的关键词列表
+    search_attempts = [dblp_venue_key, conf_display_name]
 
-    try:
-        # 修正：使用标准的 query string 语法: "venue:<name> year:<year>"
-        # 并进行 URL 编码
-        q_str = f"venue:{dblp_venue_key} year:{year}"
-        query_encoded = urllib.parse.quote(q_str)
+    for current_key in search_attempts:
+        if not current_key:
+            continue
 
-        url = (
-            f"https://dblp.org/search/publ/api?q={query_encoded}&h={limit}&format=json"
-        )
+        print(f"   [DBLP] Attempting fetch with venue:'{current_key}' year:'{year}'...")
 
-        resp = requests.get(url, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        print(f"   [DBLP] {data.get('result', {}).get('status', '')}")
+        try:
+            # 使用标准的 query string 语法: "venue:<name> year:<year>"
+            q_str = f"venue:{current_key} year:{year}"
+            query_encoded = urllib.parse.quote(q_str)
+            url = f"https://dblp.org/search/publ/api?q={query_encoded}&h={limit}&format=json"
 
-        hits = data.get("result", {}).get("hits", {}).get("hit", [])
+            resp = requests.get(url, timeout=15)
+            resp.raise_for_status()
+            data = resp.json()
 
-        if not hits:
-            print(f"   [DBLP] No hits found for {q_str}")
+            hits = data.get("result", {}).get("hits", {}).get("hit", [])
 
-        for hit in hits:
-            info = hit.get("info", {})
-            title = info.get("title", "No Title")
+            if hits:
+                print(f"   [DBLP] Found {len(hits)} papers using key: '{current_key}'")
+                for hit in hits:
+                    info = hit.get("info", {})
+                    title = info.get("title", "No Title")
 
-            # 提取链接：优先取 DOI (ee), 其次取 DBLP 页面 (url)
-            link = ""
-            ee = info.get("ee")
-            if isinstance(ee, list):
-                link = ee[0]
-            elif isinstance(ee, str):
-                link = ee
+                    # 提取链接：优先取 DOI (ee), 其次取 DBLP 页面 (url)
+                    link = ""
+                    ee = info.get("ee")
+                    if isinstance(ee, list):
+                        link = ee[0]
+                    elif isinstance(ee, str):
+                        link = ee
+                    else:
+                        link = info.get("url", "")
+
+                    papers.append({"title": title, "link": link})
+
+                # 如果当前 key 查到了数据，直接跳出循环返回结果
+                break
             else:
-                link = info.get("url", "")
+                print(f"   [DBLP] No hits found for query: {q_str}")
 
-            papers.append({"title": title, "link": link})
+            time.sleep(1.2)  # 遵守 DBLP API 礼仪
 
-        time.sleep(1.5)  # 遵守 DBLP API 礼仪
-    except Exception as e:
-        print(f"   [Error] DBLP fetch failed: {e}")
+        except Exception as e:
+            print(f"   [Error] DBLP fetch failed for '{current_key}': {e}")
+            continue  # 报错了尝试下一个 key
 
     return papers
 
@@ -230,7 +237,7 @@ def llm_stage2_summarize(tag_counts, conference_name, year, total_papers):
 def analyze_year_data(
     dblp_name, year, conf_display_name, max_papers=100, verbose=False
 ):
-    papers = fetch_dblp_papers(dblp_name, year, limit=max_papers)
+    papers = fetch_dblp_papers(dblp_name, year, conf_display_name, limit=max_papers)
     if not papers:
         return None
 
