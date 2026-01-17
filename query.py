@@ -25,14 +25,25 @@ KB_FILE = os.path.join(DATA_DIR, "knowledge_base.json")
 INTERESTED_AREAS = (os.environ.get("INTERESTED_AREAS") or "AI,NW,DB,SC").split(",")
 MAX_PAPERS_PER_YEAR = int(os.environ.get("MAX_PAPERS_PER_YEAR") or "250")
 MAX_WORKERS = int(os.environ.get("MAX_WORKERS") or "10")
-
-# LLM 配置
-LLM_API_KEY = os.environ.get("LLM_API_KEY")
-LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.openai.com/v1")
-LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-3.5-turbo")
 PUSHPLUS_TOKEN = os.environ.get("PUSHPLUS_TOKEN")
 
-client = OpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
+# LLM 配置
+USE_LLM = os.environ.get("USE_LLM", "True").lower() == "true"
+client = None
+LLM_MODEL = "gpt-3.5-turbo"  # 给个默认值防止后面引用报错
+if USE_LLM:
+    LLM_API_KEY = os.environ.get("LLM_API_KEY")
+    if not LLM_API_KEY:
+        raise ValueError(
+            "LLM_API_KEY environment variable is required when USE_LLM is True."
+        )
+    LLM_BASE_URL = os.environ.get("LLM_BASE_URL", "https://api.openai.com/v1")
+    LLM_MODEL = os.environ.get("LLM_MODEL", "gpt-3.5-turbo")
+    # 只有在使用 LLM 时才创建客户端
+    client = OpenAI(api_key=LLM_API_KEY, base_url=LLM_BASE_URL)
+else:
+    print("   [System] USE_LLM is False. LLM client not initialized.")
+
 CCF_SUB_MAP = {
     "AI": "人工智能 (AI)",
     "NW": "计算机网络 (NW)",
@@ -576,14 +587,20 @@ def process_updates(local_test_file=None):
                     kb_missing = any(str(y) not in kb[dblp_name] for y in target_ys)
 
                     if is_upd or kb_missing or local_test_file:
-                        for y in target_ys:
-                            if str(y) not in kb[dblp_name]:
-                                print(f"   [Deep Analysis] {dblp_name} {y}...")
-                                res = analyze_year_data(
-                                    dblp_name, y, info["title"], MAX_PAPERS_PER_YEAR
+                        if USE_LLM:
+                            for y in target_ys:
+                                if str(y) not in kb[dblp_name]:
+                                    print(f"   [Deep Analysis] {dblp_name} {y}...")
+                                    res = analyze_year_data(
+                                        dblp_name, y, info["title"], MAX_PAPERS_PER_YEAR
+                                    )
+                                    if res:
+                                        kb[dblp_name][str(y)] = res
+                        else:
+                            if kb_missing:
+                                print(
+                                    f"   [Skip] USE_LLM is False, skipping deep analysis for {dblp_name}"
                                 )
-                                if res:
-                                    kb[dblp_name][str(y)] = res
 
                         if is_upd or local_test_file:
                             state[cid] = fp_dict
@@ -681,15 +698,18 @@ def run_search(keyword, local_mode=False, test_file=None):
     max_y = final_info["year"]
     target_ys = [max_y - i for i in range(1, 4)]
     needs_save = False
-    for y in target_ys:
-        if str(y) not in kb[final_key]:
-            print(f"   [Auto Fill] Analyzing {final_key} {y}...")
-            res = analyze_year_data(
-                final_key, y, final_info["title"], MAX_PAPERS_PER_YEAR
-            )
-            if res:
-                kb[final_key][str(y)] = res
-                needs_save = True
+    if USE_LLM:
+        for y in target_ys:
+            if str(y) not in kb[final_key]:
+                print(f"   [Auto Fill] Analyzing {final_key} {y}...")
+                res = analyze_year_data(
+                    final_key, y, final_info["title"], MAX_PAPERS_PER_YEAR
+                )
+                if res:
+                    kb[final_key][str(y)] = res
+                    needs_save = True
+    else:
+        print("   [Skip] USE_LLM is False, returning existing data only.")
 
     if needs_save:
         with open(STATE_FILE, "r") as f:
