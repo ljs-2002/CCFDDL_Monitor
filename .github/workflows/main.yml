@@ -81,7 +81,14 @@ jobs:
               if [[ "$TITLE" == q:* ]]; then
                 KEYWORD=$(echo "$TITLE" | sed 's/q://g' | xargs)
                 python -u query.py --query "$KEYWORD"
-              fi  
+
+              elif [[ "$TITLE" == qn:* ]]; then
+                # 快速查询：禁用 LLM
+                # 在命令前加 USE_LLM=False 会仅针对本次进程覆盖环境变量
+                KEYWORD=$(echo "$TITLE" | sed 's/qn://g' | xargs)
+                echo "⚡ 执行快速查询 (禁用 LLM): $KEYWORD"
+                USE_LLM=False python -u query.py --query "$KEYWORD"
+              fi
             else
               echo "🛡️ 拦截：非作者本人或非 Query 分类的非法请求 (Author: $AUTHOR, Category: $CATEGORY)"
               exit 0
