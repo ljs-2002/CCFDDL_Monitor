@@ -124,4 +124,6 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         # 只保留最近 6 次成功的记录，删除其余成功的，保持列表清爽
         run: |
-          gh run list --workflow "${{ github.workflow }}" --status success --limit 100 --json databaseId -q '.[6:].databaseId' | xargs -I{} gh run delete {} || echo "No runs to delete"
+          gh run list --workflow "${{ github.workflow }}" --status success --limit 100 --json databaseId \
+            | jq -r '.[6:] | .[].databaseId' \
+            | xargs -r -I{} gh run delete {} || echo "No runs to delete"
