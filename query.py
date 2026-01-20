@@ -28,7 +28,7 @@ MAX_WORKERS = int(os.environ.get("MAX_WORKERS") or "10")
 PUSHPLUS_TOKEN = os.environ.get("PUSHPLUS_TOKEN")
 
 # LLM 配置
-USE_LLM = os.environ.get("USE_LLM", "True").lower() == "true"
+USE_LLM = (os.environ.get("USE_LLM") or "True").lower() == "true"
 client = None
 LLM_MODEL = "gpt-3.5-turbo"  # 给个默认值防止后面引用报错
 if USE_LLM:
